@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather App ⛅</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://www.shareicon.net/download/2015/10/07/113640_cloud.ico" type="image/x-icon">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Zen+Dots&display=swap');
+
+        :root{
+            --cloudy-morning: url("https://wallpapercave.com/wp/wp12201604.jpg");
+            --clear-morning: url("https://images8.alphacoders.com/993/thumb-1920-993549.jpg");
+            --rain-japanese-house: url("https://wallpapers.com/images/hd/rain-anime-dkv4mjw1syjbhrau.jpg");
+            --rain-noon: url("https://c4.wallpaperflare.com/wallpaper/419/1000/881/rain-trees-bucket-anime-house-hd-wallpaper-preview.jpg");
+            --clouds-evening-forest: url("https://images3.alphacoders.com/134/1348349.png");
+            --clear-dusk: url("https://wallpaper.dog/large/10883468.jpg");
+            --heavy-rain-night: url("https://i.pinimg.com/originals/3d/66/8b/3d668b1a416dff877860e576332c5b39.jpg");
+        }
+        html, body{
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        body{
+            padding: 0;
+            margin: 0;
+            background: var(--clouds-evening-forest) no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            transition: background 1s ease;
+            color: white;
+            backdrop-filter: brightness(70%) blur(2px);
+            background-position: center;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            width: 100%;
+            background: rgba(126, 126, 126, 0.15);
+            box-shadow: 0 4px 15px rgb(0, 0, 0);
+            border-radius: 15px;
+            border-top-right-radius: 0;
+            border-top-left-radius: 0;
+            position: fixed;
+            top: 0;
+            gap: 10px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo .img {
+            background-image: url("https://i.ibb.co/nQXTH4k/image.png");
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-size: 130%;
+            background-position: center;
+            box-shadow: 0 0 10px rgb(0, 0, 0);
+        }
+
+        .logotext {
+            font-size: 24px;
+            font-family: 'Zen Dots', cursive;
+            color: #ffffff;
+            text-shadow: 0 2px 5px rgb(0, 0, 0);
+        }
+
+        .search {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgb(0, 0, 0);
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease;
+        }
+
+        .search:hover {
+            background: rgba(100, 100, 100, 0.3);
+        }
+
+        .bi-search {
+            padding: 5px;
+            height: 25px;
+            width: 25px;
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            border-top-left-radius: 5px;
+            background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 3px 0.3px inset rgba(0, 0, 0, 0.753);
+        }
+
+        #searchbar {
+            width: 150px;
+            height: 30px;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            outline: none;
+            background: rgba(0, 0, 0, 0.1);
+            color: #ffffff;
+            font-size: 16px;
+            box-shadow: 0 0px 5px inset rgba(0, 0, 0, 0.82);
+            transition: background 0.3s ease;
+        }
+
+        #searchbar:hover, #searchbar:focus {
+            background: rgba(36, 36, 36, 0.2);
+        }
+
+        #searchbar::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .enter {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            background: radial-gradient(rgba(0, 0, 0, 0.071), rgba(0, 0, 0, 0.395));
+            box-shadow: 0 0 5px 2px inset rgba(0, 0, 0, 0.3), 0 0 10px 3px inset rgba(255, 255, 255, 0.2);
+            border: none;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.1s ease, box-shadow 0.3s ease;
+        }
+
+        .enter:hover {
+            box-shadow: 0 0 8px 2px inset rgba(0, 0, 0, 0.815), 0 0 15px 5px inset rgba(255, 255, 255, 0.2);
+        }
+
+        .enter:active {
+            transform: scale(0.9);
+        }
+
+        .enter i {
+            text-shadow: 0 0 22px rgb(242, 255, 0);
+            transition: transform 0.2s ease;
+        }
+
+        .enter:active i {
+            transform: scale(1.1);
+        }
+
+        /* Ripple effect */
+        .enter::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            transition: transform 0.5s, opacity 0.5s;
+            opacity: 0;
+        }
+
+        .enter:active::after {
+            transform: scale(2.5);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .upper-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 100px;
+            padding-left: 100px;
+            width:  100%;
+            max-width: 700px;
+        }
+
+        .city {
+            font-size: 22px;
+            font-weight: 500;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .temp {
+            font-size: 60px;
+            font-weight: 500;
+            margin-top: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .weather-description {
+            font-size: 18px;
+            font-weight: 500;
+            margin-top: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+        }
+
+        .carddisplay {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 700px;
+            position: fixed;
+            bottom: 20px;
+        }
+
+        .card {
+            width: 180px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.064);
+            border-radius: 20px;
+            box-shadow: 0 0px 10px 2px rgba(0, 0, 0, 0.973);
+            text-align: center;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        .card:hover{
+            transform: translateY(-10px);
+        }
+
+        h3, h2 {
+            margin: 0;
+        }
+        
+        @media only screen and (max-width: 750px) {
+            .enter:hover {
+                box-shadow: 0 0 5px 2px inset rgba(0, 0, 0, 0.3), 0 0 10px 3px inset rgba(255, 255, 255, 0.2);
+            }
+            .navbar {
+                max-width: none;
+                border-radius: 0;
+            }
+            .card:hover{
+                transform: none;
+            }
+            .carddisplay {
+                flex-direction: column;
+                align-items: center;
+                position: static;
+                margin-top: 100px;
+                margin-bottom: 20px;
+            }
+            .card {
+                width: 80%;
+                margin-bottom: 20px;
+            }
+
+            .card h3 {
+                font-size: 18px;
+            }
+
+            .card h2 {
+                font-size: 24px;
+            }
+
+            .card span {
+                font-size: 16px;
+            }
+
+            .temp {
+                font-size: 48px;
+            }
+        }
+
+        @media only screen and (max-width: 500px) {
+            .navbar {
+                flex-direction: column;
+            }
+
+            .upper-content {
+                margin-top: 150px;
+                padding-left: 20px;
+            }
+
+            .carddisplay {
+                flex-direction: column;
+                align-items: center;
+                position: static;
+                margin-top: 100px;
+                margin-bottom: 20px;
+            }
+
+            .card {
+                width: 80%;
+                margin-bottom: 20px;
+            }
+
+            .card h3 {
+                font-size: 18px;
+            }
+
+            .card h2 {
+                font-size: 24px;
+            }
+
+            .card span {
+                font-size: 16px;
+            }
+
+            .temp {
+                font-size: 48px;
+            }
+        }
+
+        @media only screen and (max-width: 330px) {
+            .navbar {
+                padding: 15px 0;
+                border-radius: 0;
+            }
+
+            .card h3 {
+                font-size: 16px;
+            }
+
+            .card h2 {
+                font-size: 20px;
+            }
+
+            .card span {
+                font-size: 14px;
+            }
+
+            .temp {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <span class="img"></span>
+            <div class="logotext">SkyCast</div>
+        </div>
+        <div class="search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+            </svg>
+            <input type="text" id="searchbar" placeholder="Search for a city" autocomplete="off">
+            <button class="enter">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="upper-content">
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 20px; margin-top: 20px;">
+        <div class="city">Location</div>
+        <div class="local-time"></div>
+        </div>
+        <div class="temp"><span id="tempval">--</span>°</div>
+        <div class="weather-description"></div>
+    </div>
+
+    <div class="carddisplay">
+        <div class="card">
+            <h3>Pressure:</h3>
+            <h2>0<span> hPa</span></h2>
+        </div>
+        <div class="card">
+            <h3>Wind Speed:</h3>
+            <h2>0<span> mph</span></h2>
+            <span>From ----</span>
+        </div>
+        <div class="card">
+            <h3>Humidity:</h3>
+            <h2>0%</h2>
+        </div>
+    </div>
+    <script src="https://kit.fontawesome.com/607a222a2c.js" crossorigin="anonymous"></script>
+    <script>
+        const apiKey = '5e503feec1241d5b0868335d3a96e413'; // Replace with your OpenWeatherMap API key
+
+        // Function to fetch weather data for a city
+        function fetchWeather(city) {
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => displayWeather(data))
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Function to display the fetched weather data in the HTML
+        function displayWeather(data) {
+            if (data.cod === 200) {
+                document.querySelector('.city').textContent = `${data.name}, ${data.sys.country}`;
+                document.querySelector('#tempval').textContent = `${Math.round(data.main.temp)}`;
+                document.querySelector('.card:nth-child(1) h2').innerHTML = `${data.main.pressure} <span>hPa</span>`;
+
+                // Set wind speed and direction
+                const windSpeedMph = (data.wind.speed * 2.237).toFixed(1);
+                const windDirection = getWindDirection(data.wind.deg);
+                document.querySelector('.card:nth-child(2) h2').innerHTML = `${windSpeedMph} mph`;
+                document.querySelector('.card:nth-child(2) span').textContent = `From ${windDirection}`;
+
+                document.querySelector('.card:nth-child(3) h2').textContent = `${data.main.humidity}%`;
+
+                // Set background based on weather and time
+                setWeatherBackground(data);
+
+                // Display the local time
+                displayLocalTime(data.timezone);
+
+                // Set the weather description
+                const description = data.weather[0].description; // Get the description
+                document.querySelector('.weather-description').textContent = description.charAt(0).toUpperCase() + description.slice(1); // Capitalize the first letter
+            } else {
+                console.error('City not found');
+            }
+        }
+
+        // Function to display the local time of the region
+        let timeInterval; // Variable to store the interval ID
+
+        function displayLocalTime(timezoneOffset) {
+            const timeElement = document.querySelector('.local-time');
+            
+            // Clear any previous interval to prevent flickering
+            if (timeInterval) clearInterval(timeInterval);
+
+            function updateTime() {
+                // Get the current UTC time and add the timezone offset to get the correct local time
+                const utcTime = new Date();
+                const localTime = new Date(utcTime.getTime() + timezoneOffset * 1000);
+                
+                // Format the time as HH:MM:SS
+                const hours = String(localTime.getUTCHours()).padStart(2, '0');
+                const minutes = String(localTime.getUTCMinutes()).padStart(2, '0');
+                const seconds = String(localTime.getUTCSeconds()).padStart(2, '0');
+
+                // Display the formatted local time
+                timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+
+            // Update the time immediately and set a new interval for this location
+            updateTime();
+            timeInterval = setInterval(updateTime, 1000);
+        }
+
+        // Function to set background based on weather and time of day
+        function setWeatherBackground(data) {
+            const weather = data.weather[0].main.toLowerCase();
+            const currentTime = data.dt;
+            const sunriseTime = data.sys.sunrise;
+            const sunsetTime = data.sys.sunset;
+
+            // Determine if it is day or night
+            const isDayTime = currentTime >= sunriseTime && currentTime < sunsetTime;
+
+            let backgroundUrl;
+
+            // Set background based on weather condition and time of day
+            if (weather === 'clear') {
+                backgroundUrl = isDayTime ? '--clear-morning' : '--clear-dusk';
+            } else if (weather === 'clouds') {
+                backgroundUrl = isDayTime ? '--cloudy-morning' : '--clouds-evening-forest';
+            } else if (weather === 'rain') {
+                backgroundUrl = isDayTime ? '--rain-noon' : '--heavy-rain-night';
+            } else {
+                // Default to a cloudy background if weather is not specified
+                backgroundUrl = '--clouds-evening-forest';
+            }
+
+            // Apply the selected background
+            document.body.style.backgroundImage = `var(${backgroundUrl})`;
+        }
+
+        // Helper to convert wind direction in degrees to compass direction
+        function getWindDirection(degrees) {
+            const directions = ['North', 'Northeast', 'East', 'Southeast', 'South', 'Southwest', 'West', 'Northwest'];
+            const index = Math.round(degrees / 45) % 8;
+            return directions[index];
+        }
+
+        // Event listener for the Enter button
+        document.querySelector('.enter').addEventListener('click', () => {
+            const city = document.querySelector('#searchbar').value.trim();
+            if (city) {
+                fetchWeather(city);
+            } else {
+                alert('Please enter a city name');
+            }
+        });
+
+        // Event listener for Enter key on the input field
+        document.querySelector('#searchbar').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                const city = event.target.value.trim();
+                if (city) {
+                    fetchWeather(city);
+                } else {
+                    alert('Please enter a city name');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
